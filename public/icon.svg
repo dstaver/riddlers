@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 32 32">
+    <rect width="9" height="9" x="2" y="2" fill="#ff41c7" />
+    <rect width="10" height="10" x="11" y="11" fill="#00cfbd" />
+    <rect width="9" height="9" x="21" y="21" fill="#ffc22d" />
+    <path d="M2 11h28M2 21h28M11 2v28M21 2v28" />
+    <style>
+        path {
+          opacity: 1;
+          stroke: #000;
+          stroke-width: 2;
+          stroke-linejoin: round;
+          stroke-linecap: round;
+        }
+    </style>
+</svg>
+
