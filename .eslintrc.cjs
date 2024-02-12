@@ -15,6 +15,7 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    'object-shorthand': 'error',
   },
   overrides: [
     {

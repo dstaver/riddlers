@@ -21,6 +21,7 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "typescript.autoClosingTags": true,
     "editor.formatOnPaste": false,
     "editor.formatOnSave": true,
     "editor.quickSuggestions": {
@@ -28,21 +29,18 @@
       "comments": "off",
       "strings": "on"
     },
-    "tailwindCSS.experimental.classRegex": [
-      "[\"'`](.*?)[\"'`]"
-    ]
+    "tailwindCSS.experimental.classRegex": ["[\"'`](.*?)[\"'`]"]
+  },
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll": "always"
   },
   "editor.formatOnSave": true,
   "tailwindCSS.experimental.configFile": "./tailwind.config.mjs",
   "tailwindCSS.experimental.classRegex": [
-    [
-      "clsx\\(([^]*)\\)",
-      "(?:'|\"|`)([^\"'`]*)(?:'|\"|`)"
-    ],
-    [
-      "tv\\(([^)]*)\\)",
-      "(?:'|\"|`)([^']*)(?:'|\"|`)"
-    ]
+    ["clsx\\(([^]*)\\)", "(?:'|\"|`)([^\"'`]*)(?:'|\"|`)"],
+    ["class:list=\\{([^]*)\\}", "(?:'|\"|`)([^\"'`]*)(?:'|\"|`)"],
+    ["tv\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ],
   "search.exclude": {
     "**/.yarn": true,
