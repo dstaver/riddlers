@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { Fragment } from 'react'
 import { useComboStore } from '../lib/ComboState'
 import { ComboGrid } from './ComboGrid'
@@ -21,13 +20,7 @@ export function Combinations() {
       <ExcludedDigitsFilter />
       <RequiredSumsFilter />
       <h2>Possible combinations</h2>
-      <div
-        className={clsx({
-          'grid grid-cols-[max-content_1fr] gap-4': !verticalLayout,
-          'grid grid-cols-[max-content_1fr_max-content_1fr] gap-4':
-            verticalLayout,
-        })}
-      >
+      <div className="grid grid-cols-[max-content_1fr] gap-4">
         {filtered.map(([sum, lengthItems]) => (
           <Fragment key={sum}>
             <h3 className="text-right text-2xl">{sum}</h3>
