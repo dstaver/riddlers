@@ -11,27 +11,34 @@ export function ComboItem({
   /** The group the item is a part of */
   items: Combo[]
 }) {
-  const verticalLayout = useComboStore(state => state.verticalLayout)
+  const verticalLayout = useComboStore().verticalLayout
+  const colors = useComboStore().colors
 
   if (verticalLayout) {
     return (
       <div className="flex items-start justify-start">
-        {digits.map(n => (
-          <NumberItem
-            key={n}
-            disabled={!item.numbers.includes(n)}
-            n={n}
-            items={items}
-          />
-        ))}
+        {colors ? (
+          digits.map(n => (
+            <NumberItem
+              key={n}
+              disabled={!item.numbers.includes(n)}
+              n={n}
+              items={items}
+            />
+          ))
+        ) : (
+          <div>{item.numberStringFull}</div>
+        )}
       </div>
     )
   }
   return (
     <div className="flex items-start justify-start">
-      {item.numbers.map(n => (
-        <NumberItem key={n} n={n} items={items} />
-      ))}
+      {colors ? (
+        item.numbers.map(n => <NumberItem key={n} n={n} items={items} />)
+      ) : (
+        <div>{item.numberString}</div>
+      )}
     </div>
   )
 }

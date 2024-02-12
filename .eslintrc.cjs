@@ -16,6 +16,7 @@ module.exports = {
       { allowConstantExport: true },
     ],
     'object-shorthand': 'error',
+    'prefer-template': 'error',
   },
   overrides: [
     {

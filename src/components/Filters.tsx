@@ -1,11 +1,11 @@
-import { useComboStore } from '../lib/ComboState'
+import { comboStore, useComboStore } from '../lib/ComboState'
 import { digits, sums } from '../lib/constants'
 import { DigitButton } from './DigitButton'
 import { SumButton } from './SumButton'
 
 export function LengthFilter() {
-  const lengths = useComboStore(state => state.lengths)
-  const onClick = useComboStore(state => state.toggleRequiredLength)
+  const lengths = useComboStore().lengths
+  const onClick = comboStore.set.toggleRequiredLength
   return (
     <>
       <h2>Number of digits: {lengths.toSorted().join()}</h2>
@@ -23,9 +23,9 @@ export function LengthFilter() {
   )
 }
 export function RequiredDigitsFilter() {
-  const requiredDigits = useComboStore(state => state.requiredDigits)
-  const excludedDigits = useComboStore(state => state.excludedDigits)
-  const onClick = useComboStore(state => state.toggleRequiredDigit)
+  const requiredDigits = useComboStore().requiredDigits
+  const excludedDigits = useComboStore().excludedDigits
+  const onClick = comboStore.set.toggleRequiredDigit
   return (
     <>
       <h2>Required digits: {requiredDigits.toSorted().join()}</h2>
@@ -44,9 +44,9 @@ export function RequiredDigitsFilter() {
   )
 }
 export function ExcludedDigitsFilter() {
-  const requiredDigits = useComboStore(state => state.requiredDigits)
-  const excludedDigits = useComboStore(state => state.excludedDigits)
-  const onClick = useComboStore(state => state.toggleExcludedDigit)
+  const requiredDigits = useComboStore().requiredDigits
+  const excludedDigits = useComboStore().excludedDigits
+  const onClick = comboStore.set.toggleExcludedDigit
   return (
     <>
       <h2>Excluded digits: {excludedDigits.toSorted().join()}</h2>
@@ -65,8 +65,8 @@ export function ExcludedDigitsFilter() {
   )
 }
 export function RequiredSumsFilter() {
-  const requiredSums = useComboStore(state => state.sums)
-  const onClick = useComboStore(state => state.toggleRequiredSum)
+  const requiredSums = useComboStore().sums
+  const onClick = comboStore.set.toggleRequiredSum
   return (
     <>
       <h2>Required sums: {requiredSums.toSorted().join()}</h2>

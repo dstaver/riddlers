@@ -1118,7 +1118,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/scheduler@npm:*":
+"@types/scheduler@npm:*, @types/scheduler@npm:^0":
   version: 0.16.8
   resolution: "@types/scheduler@npm:0.16.8"
   checksum: 10c0/f86de504945b8fc41b1f391f847444d542e2e4067cf7e5d9bfeb5d2d2393d3203b1161bc0ef3b1e104d828dabfb60baf06e8d2c27e27ff7e8258e6e618d8c4ec
@@ -2174,6 +2174,7 @@ __metadata:
     "@tailwindcss/typography": "npm:~0.5.10"
     "@types/react": "npm:^18.2.55"
     "@types/react-dom": "npm:^18.2.19"
+    "@types/scheduler": "npm:^0"
     "@typescript-eslint/eslint-plugin": "npm:^6.21.0"
     "@typescript-eslint/parser": "npm:^6.21.0"
     astro: "npm:^4.3.5"
@@ -2192,12 +2193,14 @@ __metadata:
     radash: "npm:^11.0.0"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
+    scheduler: "npm:~0.23.0"
     shikiji-core: "npm:~0.10.2"
     tailwindcss: "npm:^3.4.1"
     tsx: "npm:^4.7.1"
     typescript: "npm:^5.3.3"
     vite: "npm:~5.1.1"
     zustand: "npm:~4.5.0"
+    zustand-x: "npm:~3.0.2"
     zx: "npm:^7.2.3"
   languageName: unknown
   linkType: soft
@@ -3540,7 +3543,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immer@npm:~10.0.3":
+"immer@npm:^10.0.3, immer@npm:~10.0.3":
   version: 10.0.3
   resolution: "immer@npm:10.0.3"
   checksum: 10c0/282a4f8479a40f7d12b2b3243c095e3e892bf99058e2ffcdd6b8e9fd143e6a90f2717ab9b6c8b97c927ffb8054465c8f647056f41660dbfd672e240cf1063503
@@ -3976,6 +3979,13 @@ __metadata:
   version: 4.0.6
   resolution: "lodash.isplainobject@npm:4.0.6"
   checksum: 10c0/afd70b5c450d1e09f32a737bed06ff85b873ecd3d3d3400458725283e3f2e0bb6bf48e67dbe7a309eb371a822b16a26cca4a63c8c52db3fc7dc9d5f9dd324cbb
+  languageName: node
+  linkType: hard
+
+"lodash.mapvalues@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "lodash.mapvalues@npm:4.6.0"
+  checksum: 10c0/a976bfc3923d4d8d2034e049ec4700e3aaf141a6143c973d06be3b2c87697923cd0158ee770484ad1af52dfed93ae90d2b76268413db95a42a2f46d7e1754828
   languageName: node
   linkType: hard
 
@@ -5501,6 +5511,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"proxy-compare@npm:2.4.0":
+  version: 2.4.0
+  resolution: "proxy-compare@npm:2.4.0"
+  checksum: 10c0/33812fc4cc616ebb16300d40a3da98623ef1d58e2ca91a88c4192b6aa0e2860bf778a01a4833544891e8d4d7d7da495106f643102ba815557df302e592daf680
+  languageName: node
+  linkType: hard
+
 "ps-tree@npm:^1.2.0":
   version: 1.2.0
   resolution: "ps-tree@npm:1.2.0"
@@ -5580,6 +5597,26 @@ __metadata:
   version: 0.14.0
   resolution: "react-refresh@npm:0.14.0"
   checksum: 10c0/b8ae07ad153357d77830928a7f1fc2df837aabefee907fa273ba04c7643f3b860e986f1d4b7ada9b721c8d79b8c24b5b911a314a1a2398b105f1b13d19ea2b8d
+  languageName: node
+  linkType: hard
+
+"react-tracked@npm:^1.7.11":
+  version: 1.7.11
+  resolution: "react-tracked@npm:1.7.11"
+  dependencies:
+    proxy-compare: "npm:2.4.0"
+    use-context-selector: "npm:1.4.1"
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: "*"
+    react-native: "*"
+    scheduler: ">=0.19.0"
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+  checksum: 10c0/9f9ac8e565f7b40383e6300e99cb29b7cc7e75eab2eb0072105f5c2e9edbfacc0aee342509238311a5db66a3a14231f9475ed0ed50b0554ccb43289ef488d3e4
   languageName: node
   linkType: hard
 
@@ -5963,7 +6000,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.23.0":
+"scheduler@npm:^0.23.0, scheduler@npm:~0.23.0":
   version: 0.23.0
   resolution: "scheduler@npm:0.23.0"
   dependencies:
@@ -6901,6 +6938,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"use-context-selector@npm:1.4.1":
+  version: 1.4.1
+  resolution: "use-context-selector@npm:1.4.1"
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: "*"
+    react-native: "*"
+    scheduler: ">=0.19.0"
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+  checksum: 10c0/9751181117fdb47049aec8f3a6ccc4f1286e8661c769dbed554d58e478538cb83dac180a62baedcb3f65c99c3ed41d5423a955c9b7c12133b0e4263c30255bff
+  languageName: node
+  linkType: hard
+
 "use-sync-external-store@npm:1.2.0":
   version: 1.2.0
   resolution: "use-sync-external-store@npm:1.2.0"
@@ -7392,6 +7446,19 @@ __metadata:
   version: 3.22.4
   resolution: "zod@npm:3.22.4"
   checksum: 10c0/7578ab283dac0eee66a0ad0fc4a7f28c43e6745aadb3a529f59a4b851aa10872b3890398b3160f257f4b6817b4ce643debdda4fb21a2c040adda7862cab0a587
+  languageName: node
+  linkType: hard
+
+"zustand-x@npm:~3.0.2":
+  version: 3.0.2
+  resolution: "zustand-x@npm:3.0.2"
+  dependencies:
+    immer: "npm:^10.0.3"
+    lodash.mapvalues: "npm:^4.6.0"
+    react-tracked: "npm:^1.7.11"
+  peerDependencies:
+    zustand: ">=4.3.9"
+  checksum: 10c0/3ef1b4df8ca6f22eec785630aa4a31b8b83f3245d85e748c160f724260fc58147f27c61fab785eab81c608a00651a21d8d6e946d0685bc4a936f939e881d2115
   languageName: node
   linkType: hard
 
