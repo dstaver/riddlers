@@ -16,7 +16,7 @@ export function ComboGrid({
       })}
     >
       {items.map(item => (
-        <ComboItem key={item.numberString} item={item} items={items} />
+        <ComboItem key={item.numberString} item={item} />
       ))}
     </div>
   )

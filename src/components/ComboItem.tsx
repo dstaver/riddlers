@@ -1,29 +1,26 @@
-import { useComboStore } from '../lib/ComboState'
+import { useComboStore, useComboStoreTracked } from '../lib/ComboState'
 import { digits, type Combo } from '../lib/constants'
 import { NumberItem } from './NumberItem'
 
 export function ComboItem({
   item,
-  items,
 }: {
   /** Combination to display */
   item: Combo
-  /** The group the item is a part of */
-  items: Combo[]
 }) {
   const verticalLayout = useComboStore().verticalLayout
   const colors = useComboStore().colors
-
+  const common = useComboStoreTracked().commonNumbers()
   if (verticalLayout) {
     return (
       <div className="flex items-start justify-start">
         {colors ? (
           digits.map(n => (
             <NumberItem
+              colorize={common.includes(n)}
               key={n}
               disabled={!item.numbers.includes(n)}
               n={n}
-              items={items}
             />
           ))
         ) : (
@@ -35,7 +32,9 @@ export function ComboItem({
   return (
     <div className="flex items-start justify-start">
       {colors ? (
-        item.numbers.map(n => <NumberItem key={n} n={n} items={items} />)
+        item.numbers.map(n => (
+          <NumberItem colorize={common.includes(n)} key={n} n={n} />
+        ))
       ) : (
         <div>{item.numberString}</div>
       )}

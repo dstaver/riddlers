@@ -9,7 +9,7 @@ import {
 
 export type ComboState = {
   /** All possible combinations */
-  items: [string, [string, Combo[]][]][]
+  combinations: Combo[]
   /** Combo must be one of these sums, all if empty */
   sums: number[]
   /** Combo must be one of these lengths, all if empty */
@@ -34,7 +34,7 @@ type NumberFilterState = 'disabled' | 'required' | 'excluded'
 
 export const comboStore = createStore('combostore')(
   {
-    items: combinationsBySumAndLength(combinations.all),
+    combinations: combinations.all,
     sums: [] as number[],
     lengths: [] as number[],
     numberFilters: list<NumberFilterState>(0, 8, () => 'disabled'),
@@ -49,10 +49,16 @@ export const comboStore = createStore('combostore')(
   },
 )
   .extendSelectors((_, get) => ({
+    filtered: () => getFiltered(get.state()),
     requiredDigits: () =>
       digits.filter((n, i) => get.numberFilters()[i] === 'required'),
     excludedDigits: () =>
       digits.filter((n, i) => get.numberFilters()[i] === 'excluded'),
+  }))
+  .extendSelectors((_, get) => ({
+    items: () => combinationsBySumAndLength(get.filtered()),
+    commonNumbers: () =>
+      digits.filter(n => get.filtered().every(v => v.numbers.includes(n))),
   }))
   .extendActions(set => {
     function reset() {
@@ -60,7 +66,6 @@ export const comboStore = createStore('combostore')(
         state.sums = [] as number[]
         state.lengths = [] as number[]
         state.numberFilters = list<NumberFilterState>(0, 8, () => 'disabled')
-        state.items = getFiltered(state)
       }, 'reset')
     }
     function toggleColors() {
@@ -76,7 +81,6 @@ export const comboStore = createStore('combostore')(
     function excludeSumFromCombo() {
       set.state(state => {
         state.excludeSumFromCombo = !state.excludeSumFromCombo
-        state.items = getFiltered(state)
       }, 'excludeSumFromCombo')
     }
     function toggleRequiredSum(n: number) {
@@ -87,7 +91,6 @@ export const comboStore = createStore('combostore')(
         } else {
           state.sums.splice(index, 1)
         }
-        state.items = getFiltered(state)
       }, 'toggleRequiredSum')
     }
     function toggleRequiredLength(n: number) {
@@ -98,7 +101,6 @@ export const comboStore = createStore('combostore')(
         } else {
           state.lengths.splice(index, 1)
         }
-        state.items = getFiltered(state)
       }, 'toggleRequiredLength')
     }
     function toggleRequiredDigit(n: number) {
@@ -120,7 +122,6 @@ export const comboStore = createStore('combostore')(
             state.numberFilters[index] = 'required'
             break
         }
-        state.items = getFiltered(state)
       }, 'toggleRequiredDigit')
     }
     return {
@@ -148,28 +149,26 @@ function getFiltered({
   const excludedDigits = digits.filter(
     (n, i) => numberFilters[i] === 'excluded',
   )
-  return combinationsBySumAndLength(
-    combinations.all.filter(item => {
-      if (sums.length && !sums.includes(item.sum)) {
-        return false
-      }
-      if (lengths.length && !lengths.includes(item.length)) {
-        return false
-      }
-      if (
-        requiredDigits.length &&
-        !requiredDigits.every(n => item.numbers.includes(n))
-      ) {
-        return false
-      }
-      const excludes = excludeSumFromCombo
-        ? unique([...excludedDigits, ...item.sumArray])
-        : excludedDigits
+  return combinations.all.filter(item => {
+    if (sums.length && !sums.includes(item.sum)) {
+      return false
+    }
+    if (lengths.length && !lengths.includes(item.length)) {
+      return false
+    }
+    if (
+      requiredDigits.length &&
+      !requiredDigits.every(n => item.numbers.includes(n))
+    ) {
+      return false
+    }
+    const excludes = excludeSumFromCombo
+      ? unique([...excludedDigits, ...item.sumArray])
+      : excludedDigits
 
-      if (excludes.length && item.numbers.some(n => excludes.includes(n))) {
-        return false
-      }
-      return true
-    }),
-  )
+    if (excludes.length && item.numbers.some(n => excludes.includes(n))) {
+      return false
+    }
+    return true
+  })
 }

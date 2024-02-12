@@ -1,12 +1,12 @@
 import { Fragment } from 'react'
-import { useComboStore } from '../lib/ComboState'
+import { useComboStore, useComboStoreTracked } from '../lib/ComboState'
 import { ComboGrid } from './ComboGrid'
 import { LengthFilter, RequiredDigitsFilter } from './Filters'
 import { Toggles } from './Toggles'
 
 export function Combinations() {
   const verticalLayout = useComboStore().verticalLayout
-  const filtered = useComboStore().items
+  const filtered = useComboStoreTracked().items()
   return (
     <Fragment>
       <Toggles />

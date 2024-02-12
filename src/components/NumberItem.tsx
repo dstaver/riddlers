@@ -1,19 +1,16 @@
 import clsx from 'clsx'
-import { type Combo } from '../lib/constants'
 
 export function NumberItem({
   n,
-  items,
+  colorize,
   disabled,
 }: {
   /** Number to display */
   n: number
-  /** The group the item is a part of */
-  items: Combo[]
+  colorize?: boolean
   disabled?: boolean
 }) {
-  const nInEveryItem =
-    !disabled && items.every(item => item.numbers.includes(n))
+  const nInEveryItem = !disabled && colorize
   return (
     <div
       className={clsx('flex-auto px-1', {
