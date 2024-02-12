@@ -1,4 +1,8 @@
-import { comboStore, useComboStore } from '../lib/ComboState'
+import {
+  comboStore,
+  useComboStore,
+  useComboStoreTracked,
+} from '../lib/ComboState'
 import { digits, sums } from '../lib/constants'
 import { DigitButton } from './DigitButton'
 import { SumButton } from './SumButton'
@@ -23,41 +27,25 @@ export function LengthFilter() {
   )
 }
 export function RequiredDigitsFilter() {
-  const requiredDigits = useComboStore().requiredDigits
-  const excludedDigits = useComboStore().excludedDigits
+  const requiredDigits = useComboStoreTracked().requiredDigits()
+  const excludedDigits = useComboStoreTracked().excludedDigits()
   const onClick = comboStore.set.toggleRequiredDigit
+  const requiredStr = requiredDigits.toSorted().join()
+  const excludedStr = excludedDigits.toSorted().join()
   return (
     <>
-      <h2>Required digits: {requiredDigits.toSorted().join()}</h2>
+      <h2>
+        Required digits: {requiredStr}{' '}
+        {excludedStr && <span>Exclude {excludedStr}</span>}
+      </h2>
       <div className="flex w-full gap-1">
         {digits.map(n => (
           <DigitButton
             key={n}
             n={n}
-            disabled={excludedDigits.includes(n)}
+            isExcluded={excludedDigits.includes(n)}
             onClick={onClick}
             isSelected={requiredDigits.includes(n)}
-          />
-        ))}
-      </div>
-    </>
-  )
-}
-export function ExcludedDigitsFilter() {
-  const requiredDigits = useComboStore().requiredDigits
-  const excludedDigits = useComboStore().excludedDigits
-  const onClick = comboStore.set.toggleExcludedDigit
-  return (
-    <>
-      <h2>Excluded digits: {excludedDigits.toSorted().join()}</h2>
-      <div className="flex w-full gap-1">
-        {digits.map(n => (
-          <DigitButton
-            key={n}
-            n={n}
-            disabled={requiredDigits.includes(n)}
-            onClick={onClick}
-            isSelected={excludedDigits.includes(n)}
           />
         ))}
       </div>
@@ -68,9 +56,15 @@ export function RequiredSumsFilter() {
   const requiredSums = useComboStore().sums
   const onClick = comboStore.set.toggleRequiredSum
   return (
-    <>
-      <h2>Required sums: {requiredSums.toSorted().join()}</h2>
-      <div className="flex w-full flex-wrap justify-start gap-1">
+    <div
+      tabIndex={0}
+      className="collapse collapse-plus relative border border-base-300 bg-base-200"
+    >
+      <input type="checkbox" />
+      <div className="collapse-title text-xl font-medium">
+        Required sums: {requiredSums.toSorted().join()}
+      </div>
+      <div className="collapse-content grid grid-cols-9 gap-1">
         {sums.map(sum => (
           <SumButton
             key={sum}
@@ -80,6 +74,6 @@ export function RequiredSumsFilter() {
           />
         ))}
       </div>
-    </>
+    </div>
   )
 }

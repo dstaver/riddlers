@@ -2,7 +2,6 @@ import { Fragment } from 'react'
 import { useComboStore } from '../lib/ComboState'
 import { ComboGrid } from './ComboGrid'
 import {
-  ExcludedDigitsFilter,
   LengthFilter,
   RequiredDigitsFilter,
   RequiredSumsFilter,
@@ -16,10 +15,7 @@ export function Combinations() {
     <Fragment>
       <VerticalLayout />
       <LengthFilter />
-      <div className="grid grid-flow-col grid-cols-2 grid-rows-[max-content_1fr] gap-x-4">
-        <RequiredDigitsFilter />
-        <ExcludedDigitsFilter />
-      </div>
+      <RequiredDigitsFilter />
       <RequiredSumsFilter />
       <h2>Possible combinations</h2>
       <div className="grid grid-cols-[max-content_1fr] gap-4">

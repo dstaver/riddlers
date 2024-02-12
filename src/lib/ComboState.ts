@@ -1,7 +1,9 @@
+import { list } from 'radash'
 import { createStore } from 'zustand-x'
 import {
   combinations,
   combinationsBySumAndLength,
+  digits,
   type Combo,
 } from './constants'
 
@@ -13,9 +15,8 @@ export type ComboState = {
   /** Combo must be one of these lengths, all if empty */
   lengths: number[]
   /** Combo include all of these digits */
-  requiredDigits: number[]
+  numberFilters: NumberFilterState[]
   /** Combo must not include any of these digits */
-  excludedDigits: number[]
   verticalLayout: boolean
   colors: boolean
 }
@@ -28,13 +29,14 @@ export type ComboActions = {
   toggleExcludedDigit: (n: number) => void
 }
 
+type NumberFilterState = 'disabled' | 'required' | 'excluded'
+
 export const comboStore = createStore('combostore')(
   {
     items: combinationsBySumAndLength(combinations.all),
     sums: [] as number[],
     lengths: [] as number[],
-    requiredDigits: [] as number[],
-    excludedDigits: [] as number[],
+    numberFilters: list<NumberFilterState>(0, 8, () => 'disabled'),
     colors: true as boolean,
     verticalLayout: false as boolean,
   },
@@ -43,77 +45,95 @@ export const comboStore = createStore('combostore')(
       enabled: true,
     },
   },
-).extendActions(set => {
-  function toggleColors() {
-    set.state(state => {
-      state.colors = !state.colors
-    }, 'toggleColors')
-  }
-  function toggleLayout() {
-    set.state(state => {
-      state.verticalLayout = !state.verticalLayout
-    }, 'toggleLayout')
-  }
-  function toggleRequiredSum(n: number) {
-    set.state(state => {
-      const index = state.sums.findIndex(sum => sum === n)
-      if (index === -1) {
-        state.sums.push(n)
-      } else {
-        state.sums.splice(index, 1)
-      }
-      state.items = getFiltered(state)
-    }, 'toggleRequiredSum')
-  }
-  function toggleRequiredLength(n: number) {
-    set.state(state => {
-      const index = state.lengths.findIndex(length => length === n)
-      if (index === -1) {
-        state.lengths.push(n)
-      } else {
-        state.lengths.splice(index, 1)
-      }
-      state.items = getFiltered(state)
-    }, 'toggleRequiredLength')
-  }
-  function toggleRequiredDigit(n: number) {
-    set.state(state => {
-      const index = state.requiredDigits.findIndex(sum => sum === n)
-      if (index === -1 && !state.excludedDigits.includes(n)) {
-        state.requiredDigits.push(n)
-      } else {
-        state.requiredDigits.splice(index, 1)
-      }
-      state.items = getFiltered(state)
-    }, 'toggleRequiredDigit')
-  }
-  function toggleExcludedDigit(n: number) {
-    set.state(state => {
-      const index = state.excludedDigits.findIndex(sum => sum === n)
-      if (index === -1 && !state.requiredDigits.includes(n)) {
-        state.excludedDigits.push(n)
-      } else {
-        state.excludedDigits.splice(index, 1)
-      }
-      state.items = getFiltered(state)
-    }, 'toggleExcludedDigit')
-  }
-  return {
-    toggleColors,
-    toggleLayout,
-    toggleRequiredSum,
-    toggleRequiredLength,
-    toggleRequiredDigit,
-    toggleExcludedDigit,
-  }
-})
+)
+  .extendSelectors((_, get) => ({
+    requiredDigits: () =>
+      digits.filter((n, i) => get.numberFilters()[i] === 'required'),
+    excludedDigits: () =>
+      digits.filter((n, i) => get.numberFilters()[i] === 'excluded'),
+  }))
+  .extendActions(set => {
+    function reset() {
+      set.state(state => {
+        state.sums = [] as number[]
+        state.lengths = [] as number[]
+        state.numberFilters = list<NumberFilterState>(0, 8, () => 'disabled')
+        state.items = getFiltered(state)
+      }, 'reset')
+    }
+    function toggleColors() {
+      set.state(state => {
+        state.colors = !state.colors
+      }, 'toggleColors')
+    }
+    function toggleLayout() {
+      set.state(state => {
+        state.verticalLayout = !state.verticalLayout
+      }, 'toggleLayout')
+    }
+    function toggleRequiredSum(n: number) {
+      set.state(state => {
+        const index = state.sums.findIndex(sum => sum === n)
+        if (index === -1) {
+          state.sums.push(n)
+        } else {
+          state.sums.splice(index, 1)
+        }
+        state.items = getFiltered(state)
+      }, 'toggleRequiredSum')
+    }
+    function toggleRequiredLength(n: number) {
+      set.state(state => {
+        const index = state.lengths.findIndex(length => length === n)
+        if (index === -1) {
+          state.lengths.push(n)
+        } else {
+          state.lengths.splice(index, 1)
+        }
+        state.items = getFiltered(state)
+      }, 'toggleRequiredLength')
+    }
+    function toggleRequiredDigit(n: number) {
+      set.state(state => {
+        const index = n - 1
+        const currentState = state.numberFilters[index]
+
+        switch (currentState) {
+          // Current state is required, switch to excluded
+          case 'required':
+            state.numberFilters[index] = 'excluded'
+            break
+          // Current state is excluded, switch to disabled
+          case 'excluded':
+            state.numberFilters[index] = 'disabled'
+            break
+          // Current state is disabled, switch to required
+          case 'disabled':
+            state.numberFilters[index] = 'required'
+            break
+        }
+        state.items = getFiltered(state)
+      }, 'toggleRequiredDigit')
+    }
+    return {
+      reset,
+      toggleColors,
+      toggleLayout,
+      toggleRequiredSum,
+      toggleRequiredLength,
+      toggleRequiredDigit,
+    }
+  })
 export const useComboStore = comboStore.useStore
-function getFiltered({
-  sums,
-  lengths,
-  requiredDigits,
-  excludedDigits,
-}: ComboState) {
+export const useComboStoreTracked = () => comboStore.useTracked
+
+function getFiltered({ sums, lengths, numberFilters }: ComboState) {
+  const requiredDigits = digits.filter(
+    (n, i) => numberFilters[i] === 'required',
+  )
+  const excludedDigits = digits.filter(
+    (n, i) => numberFilters[i] === 'excluded',
+  )
   return combinationsBySumAndLength(
     combinations.all.filter(item => {
       if (sums.length && !sums.includes(item.sum)) {

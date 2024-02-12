@@ -17,7 +17,7 @@ export function SumButton({
     <button
       aria-selected={isSelected}
       disabled={disabled}
-      className={clsx('btn btn-neutral btn-sm aspect-square flex-auto', {
+      className={clsx('btn btn-neutral btn-sm aspect-square size-full', {
         'btn-outline': !isSelected,
       })}
       key={sum}
