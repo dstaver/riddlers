@@ -1,4 +1,4 @@
-import { list } from 'radash'
+import { list, unique } from 'radash'
 import { createStore } from 'zustand-x'
 import {
   combinations,
@@ -19,6 +19,7 @@ export type ComboState = {
   /** Combo must not include any of these digits */
   verticalLayout: boolean
   colors: boolean
+  excludeSumFromCombo: boolean
 }
 export type ComboActions = {
   toggleColors: () => void
@@ -39,6 +40,7 @@ export const comboStore = createStore('combostore')(
     numberFilters: list<NumberFilterState>(0, 8, () => 'disabled'),
     colors: true as boolean,
     verticalLayout: false as boolean,
+    excludeSumFromCombo: false as boolean,
   },
   {
     devtools: {
@@ -70,6 +72,12 @@ export const comboStore = createStore('combostore')(
       set.state(state => {
         state.verticalLayout = !state.verticalLayout
       }, 'toggleLayout')
+    }
+    function excludeSumFromCombo() {
+      set.state(state => {
+        state.excludeSumFromCombo = !state.excludeSumFromCombo
+        state.items = getFiltered(state)
+      }, 'excludeSumFromCombo')
     }
     function toggleRequiredSum(n: number) {
       set.state(state => {
@@ -122,12 +130,18 @@ export const comboStore = createStore('combostore')(
       toggleRequiredSum,
       toggleRequiredLength,
       toggleRequiredDigit,
+      excludeSumFromCombo,
     }
   })
 export const useComboStore = comboStore.useStore
 export const useComboStoreTracked = () => comboStore.useTracked
 
-function getFiltered({ sums, lengths, numberFilters }: ComboState) {
+function getFiltered({
+  sums,
+  lengths,
+  numberFilters,
+  excludeSumFromCombo,
+}: ComboState) {
   const requiredDigits = digits.filter(
     (n, i) => numberFilters[i] === 'required',
   )
@@ -148,10 +162,11 @@ function getFiltered({ sums, lengths, numberFilters }: ComboState) {
       ) {
         return false
       }
-      if (
-        excludedDigits.length &&
-        item.numbers.some(n => excludedDigits.includes(n))
-      ) {
+      const excludes = excludeSumFromCombo
+        ? unique([...excludedDigits, ...item.sumArray])
+        : excludedDigits
+
+      if (excludes.length && item.numbers.some(n => excludes.includes(n))) {
         return false
       }
       return true

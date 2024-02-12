@@ -1,3 +1,5 @@
+import clsx from 'clsx'
+import { useState } from 'react'
 import {
   comboStore,
   useComboStore,
@@ -53,27 +55,39 @@ export function RequiredDigitsFilter() {
   )
 }
 export function RequiredSumsFilter() {
+  const [open, setOpen] = useState(false)
   const requiredSums = useComboStore().sums
   const onClick = comboStore.set.toggleRequiredSum
   return (
-    <div
-      tabIndex={0}
-      className="collapse collapse-plus relative border border-base-300 bg-base-200"
-    >
-      <input type="checkbox" />
-      <div className="collapse-title text-xl font-medium">
+    <>
+      <button
+        className="btn btn-success"
+        onClick={() => setOpen(open => !open)}
+      >
         Required sums: {requiredSums.toSorted().join()}
+      </button>
+      <div className="relative">
+        <div
+          className={clsx(
+            'absolute left-0 top-full z-10 grid grid-cols-9 gap-1 bg-base-200 p-4 shadow-xl',
+            {
+              hidden: !open,
+            },
+          )}
+        >
+          {sums.map(sum => (
+            <SumButton
+              key={sum}
+              sum={sum}
+              onClick={onClick}
+              isSelected={requiredSums.includes(sum)}
+            />
+          ))}
+          <button className="btn btn-sm" onClick={() => setOpen(false)}>
+            Close
+          </button>
+        </div>
       </div>
-      <div className="collapse-content grid grid-cols-9 gap-1">
-        {sums.map(sum => (
-          <SumButton
-            key={sum}
-            sum={sum}
-            onClick={onClick}
-            isSelected={requiredSums.includes(sum)}
-          />
-        ))}
-      </div>
-    </div>
+    </>
   )
 }

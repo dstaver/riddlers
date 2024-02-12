@@ -5,6 +5,8 @@ export const digits = list(1, 9)
 export type Combo = {
   /** Sum of numbers in this combination */
   sum: number
+  /** Sum of numbers in this combination as array */
+  sumArray: number[]
   /** Number of digits in this combination */
   length: number
   /** Numbers as array */
@@ -68,8 +70,10 @@ function combine(
   ]
 }
 function createCombo(numbers: number[]): Combo {
+  const s = sum(numbers)
   return {
-    sum: sum(numbers),
+    sum: s,
+    sumArray: numberToArray(s),
     length: numbers.length,
     numbers,
     numberString: numbers.join(''),
@@ -77,4 +81,11 @@ function createCombo(numbers: number[]): Combo {
       .map(n => (numbers.includes(n) ? String(n) : '.'))
       .join(''),
   }
+}
+
+export function numberToArray(n: number): number[] {
+  return n
+    .toString()
+    .split('')
+    .map(n => parseInt(n, 10))
 }
