@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { Fragment } from 'react'
 import { type Combo } from '../lib/constants'
 import { ComboItem } from './ComboItem'
 
@@ -11,12 +12,14 @@ export function ComboGrid({
 }) {
   return (
     <div
-      className={clsx('flex flex-wrap gap-x-4 gap-y-1', {
+      className={clsx('flex flex-wrap gap-px pb-px', {
         'flex-col items-start': vertical,
       })}
     >
-      {items.map(item => (
-        <ComboItem key={item.numberString} item={item} />
+      {items.map((item, i) => (
+        <Fragment key={item.numberString}>
+          <ComboItem item={item} last={i === items.length - 1} />
+        </Fragment>
       ))}
     </div>
   )

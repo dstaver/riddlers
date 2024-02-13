@@ -20,7 +20,7 @@ export function Combinations() {
             <div className="grid grid-cols-[max-content_1fr] gap-x-2">
               {lengthItems.map(([length, items]) => (
                 <Fragment key={length}>
-                  <h3 className="border-r-4 border-r-gray-300 pr-4 text-right text-xl">
+                  <h3 className="text-md border-r-4 border-r-gray-300 pr-4 text-right">
                     {length}
                   </h3>
                   <ComboGrid items={items} vertical={verticalLayout} />
