@@ -1,0 +1,12 @@
+{
+  "name": "Sudoku Combinations",
+  "short_name": "Combo",
+  "lang": "en",
+  "display": "standalone",
+  "theme_color": "#fb923c",
+  "background_color": "#fb923c",
+  "icons": [
+    { "src": "icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ]
+}
