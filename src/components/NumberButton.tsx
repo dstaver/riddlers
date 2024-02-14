@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import SvgExcluded from '../icons/x.svg'
-export function DigitButton({
+export function NumberButton({
   n,
   isSelected = false,
   isExcluded = false,

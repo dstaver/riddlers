@@ -1,4 +1,4 @@
-import { useComboStore, useComboStoreTracked } from '../lib/ComboState'
+import { useComboStoreTracked } from '../lib/ComboState'
 import { digits, type Combo } from '../lib/constants'
 import { NumberItem } from './NumberItem'
 
@@ -10,8 +10,8 @@ export function ComboItem({
   item: Combo
   last?: boolean
 }) {
-  const verticalLayout = useComboStore().verticalLayout
-  const colors = useComboStore().colors
+  const verticalLayout = useComboStoreTracked().verticalLayoutEnabled()
+  const colors = useComboStoreTracked().colorsEnabled()
   const common = useComboStoreTracked().commonNumbers()
   if (verticalLayout) {
     return (

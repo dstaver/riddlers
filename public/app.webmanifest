@@ -2,7 +2,7 @@
   "name": "Sudoku Combinations",
   "short_name": "Combo",
   "lang": "en",
-  "display": "standalone",
+  "display": "fullscreen",
   "theme_color": "#fb923c",
   "background_color": "#fb923c",
   "icons": [

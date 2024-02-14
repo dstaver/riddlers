@@ -1,5 +1,10 @@
 import { group, list, mapValues, sum } from 'radash'
 export const sums = list(1, 45)
+export const emptySums: number[] = []
+export const sumCollection = list(1, 45, n => ({
+  id: n,
+  name: String(n),
+}))
 export const digits = list(1, 9)
 
 export type Combo = {

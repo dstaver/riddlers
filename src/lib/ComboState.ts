@@ -1,4 +1,5 @@
-import { list, unique } from 'radash'
+import { isArray, list, unique } from 'radash'
+import type { Selection } from 'react-aria-components'
 import { createStore } from 'zustand-x'
 import {
   combinations,
@@ -16,31 +17,38 @@ export type ComboState = {
   lengths: number[]
   /** Combo include all of these digits */
   numberFilters: NumberFilterState[]
-  /** Combo must not include any of these digits */
-  verticalLayout: boolean
-  colors: boolean
-  excludeSumFromCombo: boolean
+  selectedOptions: OptionKey[]
 }
 export type ComboActions = {
   toggleColors: () => void
   toggleLayout: () => void
   toggleRequiredSum: (n: number) => void
   toggleRequiredLength: (n: number) => void
-  toggleRequiredDigit: (n: number) => void
-  toggleExcludedDigit: (n: number) => void
+  toggleRequiredNumber: (n: number) => void
+  toggleExcludedNumber: (n: number) => void
 }
 
-type NumberFilterState = 'disabled' | 'required' | 'excluded'
-
+export type SudokuNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+export type NumberFilterState = 'disabled' | 'required' | 'excluded'
+export const optionKeys = [
+  'colors',
+  'verticalLayout',
+  'excludeSumFromCombo',
+] as const
+export type OptionKey = (typeof optionKeys)[number]
+export function isOptionKey(value: unknown): value is OptionKey {
+  return optionKeys.includes(value as OptionKey)
+}
+export function isOptionKeys(value: unknown): value is OptionKey[] {
+  return isArray(value) && value.every(isOptionKey)
+}
 export const comboStore = createStore('combostore')(
   {
     combinations: combinations.all,
     sums: [] as number[],
     lengths: [] as number[],
     numberFilters: list<NumberFilterState>(0, 8, () => 'disabled'),
-    colors: true as boolean,
-    verticalLayout: false as boolean,
-    excludeSumFromCombo: false as boolean,
+    selectedOptions: ['colors'] as OptionKey[],
   },
   {
     devtools: {
@@ -49,11 +57,21 @@ export const comboStore = createStore('combostore')(
   },
 )
   .extendSelectors((_, get) => ({
+    colorsEnabled: () => get.state().selectedOptions.includes('colors'),
+    verticalLayoutEnabled: () =>
+      get.state().selectedOptions.includes('verticalLayout'),
+    excludeSumFromComboEnabled: () =>
+      get.state().selectedOptions.includes('excludeSumFromCombo'),
     filtered: () => getFiltered(get.state()),
-    requiredDigits: () =>
-      digits.filter((n, i) => get.numberFilters()[i] === 'required'),
-    excludedDigits: () =>
-      digits.filter((n, i) => get.numberFilters()[i] === 'excluded'),
+    filteredNumbers: () =>
+      digits
+        .filter((_, i) => get.numberFilters()[i] !== 'disabled')
+        .map(n => [n, get.numberFilters()[n - 1] === 'required'] as const),
+    requiredNumbers: () =>
+      digits.filter((_, i) => get.numberFilters()[i] === 'required'),
+    requiredSumsString: () => get.sums().toSorted().join(),
+    excludedNumbers: () =>
+      digits.filter((_, i) => get.numberFilters()[i] === 'excluded'),
   }))
   .extendSelectors((_, get) => ({
     items: () => combinationsBySumAndLength(get.filtered()),
@@ -68,21 +86,14 @@ export const comboStore = createStore('combostore')(
         state.numberFilters = list<NumberFilterState>(0, 8, () => 'disabled')
       }, 'reset')
     }
-    function toggleColors() {
+    function setSelectedOptions(value: string[]) {
       set.state(state => {
-        state.colors = !state.colors
-      }, 'toggleColors')
+        if (isOptionKeys(value)) {
+          state.selectedOptions = value
+        }
+      }, 'setSelectedOptions')
     }
-    function toggleLayout() {
-      set.state(state => {
-        state.verticalLayout = !state.verticalLayout
-      }, 'toggleLayout')
-    }
-    function excludeSumFromCombo() {
-      set.state(state => {
-        state.excludeSumFromCombo = !state.excludeSumFromCombo
-      }, 'excludeSumFromCombo')
-    }
+
     function toggleRequiredSum(n: number) {
       set.state(state => {
         const index = state.sums.findIndex(sum => sum === n)
@@ -92,6 +103,23 @@ export const comboStore = createStore('combostore')(
           state.sums.splice(index, 1)
         }
       }, 'toggleRequiredSum')
+    }
+    function onSumsSelectionChange(selection: Selection) {
+      console.log('onSumsSelectionChange', selection)
+      set.state(state => {
+        if (selection === 'all') {
+          state.sums = []
+        } else {
+          state.sums = [...selection].map(n =>
+            typeof n === 'number' ? n : parseInt(n, 10),
+          )
+        }
+      }, 'onSumsSelectionChange')
+    }
+    function clearRequiredSums() {
+      set.state(state => {
+        state.sums = []
+      }, 'clearRequiredSums')
     }
     function toggleRequiredLength(n: number) {
       set.state(state => {
@@ -103,7 +131,7 @@ export const comboStore = createStore('combostore')(
         }
       }, 'toggleRequiredLength')
     }
-    function toggleRequiredDigit(n: number) {
+    function toggleRequiredNumber(n: number) {
       set.state(state => {
         const index = n - 1
         const currentState = state.numberFilters[index]
@@ -122,16 +150,16 @@ export const comboStore = createStore('combostore')(
             state.numberFilters[index] = 'required'
             break
         }
-      }, 'toggleRequiredDigit')
+      }, 'toggleRequiredNumber')
     }
     return {
       reset,
-      toggleColors,
-      toggleLayout,
       toggleRequiredSum,
+      clearRequiredSums,
+      onSumsSelectionChange,
       toggleRequiredLength,
-      toggleRequiredDigit,
-      excludeSumFromCombo,
+      toggleRequiredNumber,
+      setSelectedOptions,
     }
   })
 export const useComboStore = comboStore.useStore
@@ -141,13 +169,13 @@ function getFiltered({
   sums,
   lengths,
   numberFilters,
-  excludeSumFromCombo,
+  selectedOptions,
 }: ComboState) {
-  const requiredDigits = digits.filter(
-    (n, i) => numberFilters[i] === 'required',
+  const requiredNumbers = digits.filter(
+    (_, i) => numberFilters[i] === 'required',
   )
-  const excludedDigits = digits.filter(
-    (n, i) => numberFilters[i] === 'excluded',
+  const excludedNumbers = digits.filter(
+    (_, i) => numberFilters[i] === 'excluded',
   )
   return combinations.all.filter(item => {
     if (sums.length && !sums.includes(item.sum)) {
@@ -157,14 +185,14 @@ function getFiltered({
       return false
     }
     if (
-      requiredDigits.length &&
-      !requiredDigits.every(n => item.numbers.includes(n))
+      requiredNumbers.length &&
+      !requiredNumbers.every(n => item.numbers.includes(n))
     ) {
       return false
     }
-    const excludes = excludeSumFromCombo
-      ? unique([...excludedDigits, ...item.sumArray])
-      : excludedDigits
+    const excludes = selectedOptions.includes('excludeSumFromCombo')
+      ? unique([...excludedNumbers, ...item.sumArray])
+      : excludedNumbers
 
     if (excludes.length && item.numbers.some(n => excludes.includes(n))) {
       return false
